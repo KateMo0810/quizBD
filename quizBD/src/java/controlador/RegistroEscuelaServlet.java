@@ -7,11 +7,17 @@ package controlador;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.Escuela;
 import modelo.daoEscuela;
 import modelo.daoEstudiante;
 
@@ -51,7 +57,17 @@ private daoEscuela daoec;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+    try {
         RequestDispatcher rq = request.getRequestDispatcher("newjsp.jsp");
+        ArrayList<Escuela> personas =(ArrayList) this.daoec.listar();
+        request.setAttribute("lista", personas);
+        rq.forward(request, response);
+    } catch (SQLException ex) {
+        Logger.getLogger(RegistroEscuelaServlet.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (URISyntaxException ex) {
+        Logger.getLogger(RegistroEscuelaServlet.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     }
 
     /**
@@ -65,7 +81,17 @@ private daoEscuela daoec;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        if(request.getParameter("Buscar")!=null){
+            try {
+                String nomEscuela = request.getParameter("escuela");
+                daoes.listar(nomEscuela);
+            } catch (SQLException ex) {
+                Logger.getLogger(RegistroEscuelaServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(RegistroEscuelaServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         response.sendRedirect("RegistroEscuelaServlet");
 
     }
